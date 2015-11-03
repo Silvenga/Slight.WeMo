@@ -1,16 +1,17 @@
 ﻿namespace Slight.WeMo.Framework.Actors
 {
-    using System;
-    using System.Collections.Generic;
     using System.Dynamic;
     using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
+    using System.Threading;
     using System.Xml.Linq;
 
     public class WeMoClient
     {
+        public const int Delay = 10; // Prevents 500's on WeMo's side
+
         public string Address { get; }
 
         public WeMoClient(string host, int port)
@@ -28,7 +29,10 @@
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/xml");
 
             var content = ParseResponse(response.Content.ReadAsStringAsync().Result).Envelope.Body;
-            return ((IDictionary<string, object>) content)[$"{command}Response"];
+
+            Thread.Sleep(Delay);
+
+            return content;
         }
 
         private HttpRequestMessage CreateBasicEventRequest(string command, string data)
@@ -49,6 +53,9 @@
             var response = client.SendAsync(request).Result;
 
             var content = ParseResponse(response.Content.ReadAsStringAsync().Result).root.device;
+
+            Thread.Sleep(Delay);
+
             return content;
         }
 

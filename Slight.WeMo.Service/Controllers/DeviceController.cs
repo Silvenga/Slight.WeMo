@@ -29,6 +29,38 @@
             return NotFound();
         }
 
+        [Route("device/{deviceId}/signal"), HttpGet]
+        public IHttpActionResult GetSignalStrength(string deviceId)
+        {
+            var device = WeMoDiscoverer.Instance.Get(deviceId);
+
+            if (device != null)
+            {
+                var results = device.GetSignalStrength();
+                if (results == "Error")
+                {
+                    return BadRequest();
+                }
+                return Ok(results);
+            }
+
+            return NotFound();
+        }
+
+        [Route("device/{deviceId}/refresh"), HttpGet]
+        public IHttpActionResult EnumerateDevice(string deviceId)
+        {
+            var device = WeMoDiscoverer.Instance.Get(deviceId);
+
+            if (device != null)
+            {
+                device.EnumerateDeviceInfo();
+                return Ok(device);
+            }
+
+            return NotFound();
+        }
+
         [Route("device/{deviceId}/switch"), HttpGet]
         public IHttpActionResult GetSwitchStatus(string deviceId)
         {

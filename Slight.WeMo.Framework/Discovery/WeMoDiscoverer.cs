@@ -40,37 +40,42 @@ namespace Slight.WeMo.Framework.Discovery
         {
             while (true)
             {
-                try
+                Console.WriteLine("Launching search.");
+                var list = new List<DeviceAnnouncement>();
+
+                using (var client = new Client())
                 {
-                    Console.WriteLine("Launching search.");
-                    var list = new List<DeviceAnnouncement>();
-
-                    using (var client = new Client())
+                    client.BrowseAll();
+                    client.DeviceAdded += (sender, args) =>
                     {
-                        client.BrowseAll();
-                        client.DeviceAdded += (sender, args) =>
-                        {
-                            list.Add(args.Device);
-                        };
+                        list.Add(args.Device);
+                    };
 
-                        Thread.Sleep(TimeSpan.FromSeconds(5));
-                    }
-
-                    Console.WriteLine($"Search completed. Found {list.Count} devices.");
-
-                    foreach (var announcement in list)
-                    {
-                        OnDeviceDetected(announcement);
-                    }
-
-                    RemoveOldDevices();
+                    Thread.Sleep(TimeSpan.FromSeconds(5));
                 }
-                catch (Exception e)
+
+                Console.WriteLine($"Search completed. Found {list.Count} devices.");
+
+                foreach (var announcement in list)
                 {
-                    Console.WriteLine(e);
+                    OnDeviceDetected(announcement);
                 }
+
+                RemoveOldDevices();
+
+                Thread.Sleep(SearchDelay());
             }
             // ReSharper disable once FunctionNeverReturns
+        }
+
+        private TimeSpan SearchDelay()
+        {
+            if (Devices.Any())
+            {
+                return TimeSpan.FromMinutes(1);
+            }
+
+            return TimeSpan.FromSeconds(5);
         }
 
         private void OnDeviceDetected(DeviceAnnouncement device)

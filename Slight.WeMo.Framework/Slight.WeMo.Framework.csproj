@@ -34,12 +34,12 @@
       <HintPath>..\packages\JetBrains.Annotations.10.0.0\lib\net20\JetBrains.Annotations.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Mono.Ssdp, Version=1.0.5783.27851, Culture=neutral, PublicKeyToken=1b9e6d771899610e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Upnp.1.0.0.0\lib\net45\Mono.Ssdp.dll</HintPath>
+    <Reference Include="Mono.Ssdp, Version=1.0.5784.36490, Culture=neutral, PublicKeyToken=1b9e6d771899610e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Upnp.1.0.0.1\lib\net45\Mono.Ssdp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Mono.Upnp, Version=1.0.5783.27851, Culture=neutral, PublicKeyToken=5efb3618e038e321, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Upnp.1.0.0.0\lib\net45\Mono.Upnp.dll</HintPath>
+    <Reference Include="Mono.Upnp, Version=1.0.5784.36490, Culture=neutral, PublicKeyToken=5efb3618e038e321, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Upnp.1.0.0.1\lib\net45\Mono.Upnp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

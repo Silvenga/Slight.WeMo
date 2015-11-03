@@ -85,29 +85,30 @@
         public string GetSignalStrength()
         {
             var response = Client.ExecuteSoapAction("GetSignalStrength");
-            return response.SignalStrength;
+            return response.GetSignalStrengthResponse.SignalStrength;
         }
 
         public string GetBinaryState()
         {
             var response = Client.ExecuteSoapAction("GetBinaryState");
-            return response.BinaryState;
+            return response.GetBinaryStateResponse.BinaryState;
         }
 
         public string SetBinaryState(string state)
         {
-            var response = Client.ExecuteSoapAction("SetBinaryState", $"<BinaryState>{state}</BinaryState>");
+            var response = Client.ExecuteSoapAction("SetBinaryState", $"<BinaryState>{state}</BinaryState>").SetBinaryStateResponse;
             var results = ((IDictionary<string, object>) response);
             return results.ContainsKey("CountdownEndTime") ? response.CountdownEndTime : response.BinaryState;
         }
 
         public string ChangeFriendlyName(string name)
         {
-            var response = Client.ExecuteSoapAction("ChangeFriendlyName", $"<FriendlyName>{name}</FriendlyName>");
+            Client.ExecuteSoapAction("ChangeFriendlyName", $"<FriendlyName>{name}</FriendlyName>");
 
             try
             {
-                return response.FriendlyName;
+                EnumerateDeviceInfo();
+                return FriendlyName;
             }
             catch (Exception)
             {
