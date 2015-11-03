@@ -4,6 +4,8 @@ namespace Slight.WeMo.Framework.Discovery
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     using JetBrains.Annotations;
 
@@ -16,8 +18,6 @@ namespace Slight.WeMo.Framework.Discovery
         public static WeMoDiscoverer Instance { get; } = new WeMoDiscoverer();
 
         public bool Searching { get; private set; }
-
-        private Client UpnpClient { get; } = new Client();
 
         private Dictionary<string, WeMoDevice> Devices { get; } = new Dictionary<string, WeMoDevice>();
 
@@ -33,46 +33,122 @@ namespace Slight.WeMo.Framework.Discovery
             }
             Searching = true;
 
-            UpnpClient.BrowseAll();
-            UpnpClient.DeviceAdded += UpnpClientOnDeviceAdded;
-            UpnpClient.DeviceRemoved += UpnpClientOnDeviceRemoved;
+            Task.Run(() => StartSearchLoop());
         }
 
-        private void UpnpClientOnDeviceAdded(object sender, DeviceEventArgs deviceEventArgs)
+        private void StartSearchLoop()
         {
-            var device = deviceEventArgs.Device;
-            WeMoDevice weMoDevice;
-            var success = WeMoDevice.TryCreate(device.Locations.FirstOrDefault(), out weMoDevice);
-            if (success)
+            while (true)
             {
-                Devices.Add(device.Udn, weMoDevice);
-                Console.WriteLine($"Found device: {weMoDevice.FriendlyName} {weMoDevice.DeviceId}");
-                Console.WriteLine();
+                Console.WriteLine("Launching search.");
+                var list = new List<DeviceAnnouncement>();
+
+                using (var client = new Client())
+                {
+                    client.BrowseAll();
+                    client.DeviceAdded += (sender, args) =>
+                    {
+                        list.Add(args.Device);
+                    };
+
+                    Thread.Sleep(TimeSpan.FromSeconds(5));
+                }
+
+                Console.WriteLine($"Search completed. Found {list.Count} devices.");
+
+                foreach (var announcement in list)
+                {
+                    OnDeviceDetected(announcement);
+                }
+
+                RemoveOldDevices();
+            }
+            // ReSharper disable once FunctionNeverReturns
+        }
+
+        private void OnDeviceDetected(DeviceAnnouncement device)
+        {
+            lock (Devices)
+            {
+                var location = device.Locations.FirstOrDefault();
+                WeMoDevice weMoDevice;
+                var success = WeMoDevice.TryCreate(location, out weMoDevice);
+
+                var newDevice = success
+                                && !Devices.ContainsKey(device.Udn);
+
+                if (newDevice)
+                {
+                    Devices.Add(device.Udn, weMoDevice);
+                    Console.WriteLine($"Found new WeMo: {weMoDevice.FriendlyName} @ {weMoDevice.Host}");
+
+                    return;
+                }
+
+                var updatedDevice = success
+                                    && Devices.ContainsKey(device.Udn)
+                                    && Devices[device.Udn].Location != location;
+
+                if (updatedDevice)
+                {
+                    Devices[device.Udn] = weMoDevice;
+                    Console.WriteLine($"Found updated WeMo: {weMoDevice.FriendlyName} @ {weMoDevice.Host}");
+                    return;
+                }
+
+                var existingDevice = success
+                                     && Devices.ContainsKey(device.Udn);
+
+                if (existingDevice)
+                {
+                    Devices[device.Udn].LastDetected = DateTime.Now;
+                    Console.WriteLine($"Found existing WeMo: {weMoDevice.FriendlyName} @ {weMoDevice.Host}");
+                }
             }
         }
 
-        private void UpnpClientOnDeviceRemoved(object sender, DeviceEventArgs deviceEventArgs)
+        private void RemoveOldDevices()
         {
-            Console.WriteLine($"Device removed: {deviceEventArgs.Device.Udn}.");
-            Devices.Remove(deviceEventArgs.Device.Udn);
+            lock (Devices)
+            {
+                var removedDevices = Devices
+               .Where(x => x.Value.LastDetected > DateTime.Now.AddMinutes(5))
+               .Select(x => x.Key)
+               .ToList();
+
+                foreach (var deviceId in removedDevices)
+                {
+                    Devices.Remove(deviceId);
+                }
+            }
         }
 
         [CanBeNull]
         public WeMoDevice Get([CanBeNull] string deviceId)
         {
-            if (deviceId == null)
+            lock (Devices)
             {
-                return null;
-            }
+                if (deviceId == null)
+                {
+                    return null;
+                }
 
-            WeMoDevice value;
-            return Devices.TryGetValue(deviceId, out value) ? value : null;
+                WeMoDevice value;
+                return Devices.TryGetValue(deviceId, out value)
+                    ? value
+                    : null;
+            }
         }
 
         [NotNull]
         public IEnumerable<WeMoDevice> GetAll()
         {
-            return Devices.Values.ToList();
+            lock (Devices)
+            {
+                return Devices
+                    .Values
+                    .ToList();
+            }
         }
     }
 }

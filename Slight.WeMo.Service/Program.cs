@@ -12,7 +12,7 @@ namespace Slight.WeMo.Service
         {
             WeMoDiscoverer.Instance.StartSearch();
 
-            const string baseAddress = "http://localhost:9000/";
+            const string baseAddress = "http://+:9000/";
             using (WebApp.Start<Startup>(baseAddress))
             {
                 Console.WriteLine("Ready.");

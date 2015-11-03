@@ -27,16 +27,18 @@
 
         public int Port { get; set; }
 
-        public string SignalStrength => GetSignalStrength();
+        public string Location { get; set; }
 
-        public string BinaryState => GetBinaryState();
+        public DateTime LastDetected { get; set; }
 
         private WeMoClient Client { get; }
 
-        private WeMoDevice(string host, int port)
+        private WeMoDevice(string host, int port, string location)
         {
             Host = host;
             Port = port;
+            Location = location;
+            LastDetected = DateTime.Now;
 
             Client = new WeMoClient(host, port);
             EnumerateDeviceInfo();
@@ -49,17 +51,20 @@
             try
             {
                 var url = new Uri(location);
-                var looksLikeWeMo = url.PathAndQuery == "/setup.xml";
+                var looksLikeWeMo = url.PathAndQuery == "/setup.xml"
+                    && url.Port > 49150
+                    && url.Port < 49160;
                 if (!looksLikeWeMo)
                 {
                     return false;
                 }
-                device = new WeMoDevice(url.Host, url.Port);
+                device = new WeMoDevice(url.Host, url.Port, location);
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e);
                 return false;
             }
         }

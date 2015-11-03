@@ -31,13 +31,13 @@
             return ((IDictionary<string, object>) content)[$"{command}Response"];
         }
 
-        private static HttpRequestMessage CreateBasicEventRequest(string command, string data)
+        private HttpRequestMessage CreateBasicEventRequest(string command, string data)
         {
             var body = BaseBody(command, data);
 
-            var request = new HttpRequestMessage(HttpMethod.Post,  "/upnp/control/basicevent1");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{Address}/upnp/control/basicevent1");
             request.Headers.Add("SOAPACTION", $"\"urn:Belkin:service:basicevent:1#{command}\"");
-            request.Content = new StringContent(body,Encoding.UTF8, "text/xml");
+            request.Content = new StringContent(body, Encoding.UTF8, "text/xml");
 
             return request;
         }
@@ -52,16 +52,15 @@
             return content;
         }
 
-        private static HttpRequestMessage CreateBasicInfoRequest()
+        private HttpRequestMessage CreateBasicInfoRequest()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/setup.xml");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{Address}/setup.xml");
             return request;
         }
 
         private HttpClient CreateClient()
         {
             var client = new HttpClient();
-            client.BaseAddress = new Uri(Address);
             return client;
         }
 

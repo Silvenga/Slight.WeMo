@@ -10,7 +10,9 @@
         [Route("devices"), HttpGet]
         public IHttpActionResult ListDevices()
         {
-            var deviceList = WeMoDiscoverer.Instance.GetAll();
+            var deviceList = WeMoDiscoverer.Instance
+                .GetAll();
+
             return Ok(deviceList);
         }
 
@@ -27,7 +29,25 @@
             return NotFound();
         }
 
-        [Route("device/{deviceId}/off"), HttpGet]
+        [Route("device/{deviceId}/switch"), HttpGet]
+        public IHttpActionResult GetSwitchStatus(string deviceId)
+        {
+            var device = WeMoDiscoverer.Instance.Get(deviceId);
+
+            if (device != null)
+            {
+                var results = device.GetBinaryState();
+                if (results == "Error")
+                {
+                    return BadRequest();
+                }
+                return Ok(results);
+            }
+
+            return NotFound();
+        }
+
+        [Route("device/{deviceId}/switch/off"), HttpPut]
         public IHttpActionResult SetOff(string deviceId)
         {
             var device = WeMoDiscoverer.Instance.Get(deviceId);
@@ -39,13 +59,13 @@
                 {
                     return BadRequest();
                 }
-                return Ok(device);
+                return Ok(results);
             }
 
             return NotFound();
         }
 
-        [Route("device/{deviceId}/on"), HttpGet]
+        [Route("device/{deviceId}/switch/on"), HttpPut]
         public IHttpActionResult SetOn(string deviceId)
         {
             var device = WeMoDiscoverer.Instance.Get(deviceId);
@@ -57,7 +77,7 @@
                 {
                     return BadRequest();
                 }
-                return Ok(device);
+                return Ok(results);
             }
 
             return NotFound();
