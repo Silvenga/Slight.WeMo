@@ -82,5 +82,23 @@
 
             return NotFound();
         }
+
+        [Route("device/{deviceId}/name"), HttpPut]
+        public IHttpActionResult SetOn(string deviceId, [FromBody] string name)
+        {
+            var device = WeMoDiscoverer.Instance.Get(deviceId);
+
+            if (device != null)
+            {
+                var results = device.ChangeFriendlyName(name);
+                if (results == "Error")
+                {
+                    return BadRequest();
+                }
+                return Ok(results);
+            }
+
+            return NotFound();
+        }
     }
 }

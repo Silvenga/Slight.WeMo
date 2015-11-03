@@ -100,5 +100,19 @@
             var results = ((IDictionary<string, object>) response);
             return results.ContainsKey("CountdownEndTime") ? response.CountdownEndTime : response.BinaryState;
         }
+
+        public string ChangeFriendlyName(string name)
+        {
+            var response = Client.ExecuteSoapAction("ChangeFriendlyName", $"<FriendlyName>{name}</FriendlyName>");
+
+            try
+            {
+                return response.FriendlyName;
+            }
+            catch (Exception)
+            {
+                return "Error";
+            }
+        }
     }
 }

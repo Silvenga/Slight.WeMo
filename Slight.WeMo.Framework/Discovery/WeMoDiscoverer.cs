@@ -40,28 +40,35 @@ namespace Slight.WeMo.Framework.Discovery
         {
             while (true)
             {
-                Console.WriteLine("Launching search.");
-                var list = new List<DeviceAnnouncement>();
-
-                using (var client = new Client())
+                try
                 {
-                    client.BrowseAll();
-                    client.DeviceAdded += (sender, args) =>
+                    Console.WriteLine("Launching search.");
+                    var list = new List<DeviceAnnouncement>();
+
+                    using (var client = new Client())
                     {
-                        list.Add(args.Device);
-                    };
+                        client.BrowseAll();
+                        client.DeviceAdded += (sender, args) =>
+                        {
+                            list.Add(args.Device);
+                        };
 
-                    Thread.Sleep(TimeSpan.FromSeconds(5));
+                        Thread.Sleep(TimeSpan.FromSeconds(5));
+                    }
+
+                    Console.WriteLine($"Search completed. Found {list.Count} devices.");
+
+                    foreach (var announcement in list)
+                    {
+                        OnDeviceDetected(announcement);
+                    }
+
+                    RemoveOldDevices();
                 }
-
-                Console.WriteLine($"Search completed. Found {list.Count} devices.");
-
-                foreach (var announcement in list)
+                catch (Exception e)
                 {
-                    OnDeviceDetected(announcement);
+                    Console.WriteLine(e);
                 }
-
-                RemoveOldDevices();
             }
             // ReSharper disable once FunctionNeverReturns
         }
