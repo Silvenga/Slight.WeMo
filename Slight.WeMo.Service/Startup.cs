@@ -5,9 +5,13 @@ using Owin;
 
 namespace Slight.WeMo.Service
 {
+    using System;
+    using System.Linq;
     using System.Web.Http;
 
     using JetBrains.Annotations;
+
+    using Swashbuckle.Application;
 
     public class Startup
     {
@@ -17,7 +21,22 @@ namespace Slight.WeMo.Service
             var config = new HttpConfiguration();
             config.MapHttpAttributeRoutes();
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
+            config.EnableSwagger("help/{apiVersion}", c =>
+            {
+                c.IncludeXmlComments("Slight.WeMo.Service.XML");
+                c.SingleApiVersion("v1", "Slight.WeMo REST Api");
+            }).EnableSwaggerUi("help/ui/{*assetPath}");
             app.UseWebApi(config);
+
+            app.Use(async (context, func) =>
+            {
+                if (new[] { "/", "/help" }.Any(x => context.Request.Path.Value.StartsWith(x)))
+                {
+                    context.Response.Redirect("/help/ui/index");
+                    return;
+                }
+                await func.Invoke();
+            });
         }
     }
 }

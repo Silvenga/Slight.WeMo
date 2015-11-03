@@ -2,6 +2,8 @@
 
 namespace Slight.WeMo.Service
 {
+    using System.Diagnostics;
+
     using Microsoft.Owin.Hosting;
 
     using Slight.WeMo.Framework.Discovery;
@@ -12,7 +14,9 @@ namespace Slight.WeMo.Service
         {
             WeMoDiscoverer.Instance.StartSearch();
 
-            const string baseAddress = "http://+:9000/";
+            var host = Debugger.IsAttached ? "localhost" : "+";
+            var baseAddress = $"http://{host}:9000/";
+
             using (WebApp.Start<Startup>(baseAddress))
             {
                 Console.WriteLine("Ready.");
