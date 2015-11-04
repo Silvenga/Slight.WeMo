@@ -5,7 +5,6 @@ using Owin;
 
 namespace Slight.WeMo.Service
 {
-    using System;
     using System.Linq;
     using System.Web.Http;
 

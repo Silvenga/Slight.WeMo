@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slight.WeMo.Framework", "Sl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slight.WeMo.Service", "Slight.WeMo.Service\Slight.WeMo.Service.csproj", "{AEA00A06-B3B3-4027-9471-CFB8A3FF4D64}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slight.WeMo.DataAccess", "Slight.WeMo.DataAccess\Slight.WeMo.DataAccess.csproj", "{1D4CEC9E-CD81-443A-9E81-84CDC4C3CE34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slight.WeMo.Entities", "Slight.WeMo.Entities\Slight.WeMo.Entities.csproj", "{A0A84678-FC6A-4FC5-BE60-31F9C612D304}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{AEA00A06-B3B3-4027-9471-CFB8A3FF4D64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEA00A06-B3B3-4027-9471-CFB8A3FF4D64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEA00A06-B3B3-4027-9471-CFB8A3FF4D64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D4CEC9E-CD81-443A-9E81-84CDC4C3CE34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D4CEC9E-CD81-443A-9E81-84CDC4C3CE34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D4CEC9E-CD81-443A-9E81-84CDC4C3CE34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D4CEC9E-CD81-443A-9E81-84CDC4C3CE34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0A84678-FC6A-4FC5-BE60-31F9C612D304}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0A84678-FC6A-4FC5-BE60-31F9C612D304}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0A84678-FC6A-4FC5-BE60-31F9C612D304}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0A84678-FC6A-4FC5-BE60-31F9C612D304}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
