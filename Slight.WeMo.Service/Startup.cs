@@ -5,8 +5,13 @@ using Owin;
 
 namespace Slight.WeMo.Service
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Web.Http;
+
+    using Hangfire;
+    using Hangfire.Dashboard;
+    using Hangfire.MemoryStorage;
 
     using JetBrains.Annotations;
 
@@ -27,6 +32,13 @@ namespace Slight.WeMo.Service
             }).EnableSwaggerUi("help/ui/{*assetPath}");
             app.UseWebApi(config);
 
+            GlobalConfiguration.Configuration.UseMemoryStorage();
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                AuthorizationFilters = new IAuthorizationFilter[] { new AllowAllFilter() }
+            });
+            app.UseHangfireServer();
+
             app.Use(async (context, func) =>
             {
                 if (new[] { "/", "/help" }.Any(x => context.Request.Path.Value.StartsWith(x)))
@@ -36,6 +48,14 @@ namespace Slight.WeMo.Service
                 }
                 await func.Invoke();
             });
+        }
+    }
+
+    public class AllowAllFilter : IAuthorizationFilter
+    {
+        public bool Authorize(IDictionary<string, object> owinEnvironment)
+        {
+            return true;
         }
     }
 }

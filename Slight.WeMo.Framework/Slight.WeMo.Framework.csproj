@@ -128,7 +128,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actors\WeMoClient.cs" />
-    <Compile Include="Actors\WeMoProvider.cs" />
+    <Compile Include="Providers\DeviceProvider.cs" />
     <Compile Include="Actors\XmlToDynamic.cs" />
     <Compile Include="Actors\WeMoDiscoverer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
