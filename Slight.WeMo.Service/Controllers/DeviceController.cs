@@ -4,8 +4,9 @@
     using System.Web.Http;
     using System.Web.Http.Description;
 
-    using Slight.WeMo.Framework.Discovery;
-    using Slight.WeMo.Framework.Models;
+    using Slight.WeMo.Entities.Models;
+    using Slight.WeMo.Framework.Actors;
+    using Slight.WeMo.Framework.Providers;
 
     /// <summary>
     /// Manages WeMo devices.
@@ -13,6 +14,8 @@
     [RoutePrefix("wemo")]
     public class DeviceController : ApiController
     {
+        private readonly DeviceProvider _provider = new DeviceProvider();
+
         /// <summary>
         /// Get a list of all known WeMo devices.
         /// </summary>
@@ -22,8 +25,7 @@
         [Route("devices"), HttpGet]
         public IHttpActionResult ListDevices()
         {
-            var deviceList = WeMoDiscoverer.Instance
-                .GetAll();
+            var deviceList = _provider.GetAll();
 
             return Ok(deviceList);
         }
@@ -39,7 +41,7 @@
         [Route("device/{deviceId}"), HttpGet]
         public IHttpActionResult GetDevice(string deviceId)
         {
-            var device = WeMoDiscoverer.Instance.Get(deviceId);
+            var device = _provider.Get(deviceId);
 
             if (device != null)
             {
@@ -61,11 +63,12 @@
         [Route("device/{deviceId}/signal"), HttpGet]
         public IHttpActionResult GetSignalStrength(string deviceId)
         {
-            var device = WeMoDiscoverer.Instance.Get(deviceId);
+            var device = _provider.Get(deviceId);
 
             if (device != null)
             {
-                var results = device.GetSignalStrength();
+                var client = new WeMoClient(device);
+                var results = client.GetSignalStrength();
                 if (results == "Error")
                 {
                     return BadRequest();
@@ -87,11 +90,12 @@
         [Route("device/{deviceId}/refresh"), HttpPost]
         public IHttpActionResult EnumerateDevice(string deviceId)
         {
-            var device = WeMoDiscoverer.Instance.Get(deviceId);
+            var device = _provider.Get(deviceId);
 
             if (device != null)
             {
-                device.EnumerateDeviceInfo();
+                var client = new WeMoClient(device);
+                client.EnumerateDeviceInfo();
                 return Ok(device);
             }
 
@@ -110,11 +114,12 @@
         [Route("device/{deviceId}/switch"), HttpGet]
         public IHttpActionResult GetSwitchStatus(string deviceId)
         {
-            var device = WeMoDiscoverer.Instance.Get(deviceId);
+            var device = _provider.Get(deviceId);
 
             if (device != null)
             {
-                var results = device.GetBinaryState();
+                var client = new WeMoClient(device);
+                var results = client.GetBinaryState();
                 if (results == "Error")
                 {
                     return BadRequest();
@@ -137,11 +142,12 @@
         [Route("device/{deviceId}/switch/off"), HttpPut]
         public IHttpActionResult SetOff(string deviceId)
         {
-            var device = WeMoDiscoverer.Instance.Get(deviceId);
+            var device = _provider.Get(deviceId);
 
             if (device != null)
             {
-                var results = device.SetBinaryState("0");
+                var client = new WeMoClient(device);
+                var results = client.SetBinaryState("0");
                 if (results == "Error")
                 {
                     return BadRequest();
@@ -164,11 +170,12 @@
         [Route("device/{deviceId}/switch/on"), HttpPut]
         public IHttpActionResult SetOn(string deviceId)
         {
-            var device = WeMoDiscoverer.Instance.Get(deviceId);
+            var device = _provider.Get(deviceId);
 
             if (device != null)
             {
-                var results = device.SetBinaryState("1");
+                var client = new WeMoClient(device);
+                var results = client.SetBinaryState("1");
                 if (results == "Error")
                 {
                     return BadRequest();
@@ -192,11 +199,12 @@
         [Route("device/{deviceId}/name"), HttpPut]
         public IHttpActionResult SetName(string deviceId, [FromBody] string name)
         {
-            var device = WeMoDiscoverer.Instance.Get(deviceId);
+            var device = _provider.Get(deviceId);
 
             if (device != null)
             {
-                var results = device.ChangeFriendlyName(name);
+                var client = new WeMoClient(device);
+                var results = client.ChangeFriendlyName(name);
                 if (results == "Error")
                 {
                     return BadRequest();

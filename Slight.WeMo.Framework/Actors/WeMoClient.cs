@@ -1,5 +1,7 @@
 ﻿namespace Slight.WeMo.Framework.Actors
 {
+    using System;
+    using System.Collections.Generic;
     using System.Dynamic;
     using System.Linq;
     using System.Net.Http;
@@ -8,19 +10,73 @@
     using System.Threading;
     using System.Xml.Linq;
 
+    using JetBrains.Annotations;
+
+    using Slight.WeMo.Entities.Models;
+
     public class WeMoClient
     {
         public const int Delay = 10; // Prevents 500's on WeMo's side
 
+        public WeMoDevice Device { get; }
+
         public string Address { get; }
 
-        public WeMoClient(string host, int port)
+        public WeMoClient([NotNull] WeMoDevice device)
         {
-            var address = $"http://{host}:{port}";
+            Device = device;
+            var address = $"http://{device.Host}:{device.Port}";
             Address = address;
         }
 
-        public dynamic ExecuteSoapAction(string command, string data = "")
+        public void EnumerateDeviceInfo()
+        {
+            var info = ExecuteDeviceInfo();
+            Device.FriendlyName = info.friendlyName;
+            Device.ModelName = info.modelName;
+            Device.ModelNumber = info.modelNumber;
+            Device.SerialNumber = info.serialNumber;
+            Device.MacAddress = info.macAddress;
+            Device.FirmwareVersion = info.firmwareVersion;
+            Device.DeviceId = info.UDN;
+            Device.DeviceType = info.deviceType;
+        }
+
+        public string GetSignalStrength()
+        {
+            var response = ExecuteSoapAction("GetSignalStrength");
+            return response.GetSignalStrengthResponse.SignalStrength;
+        }
+
+        public string GetBinaryState()
+        {
+            var response = ExecuteSoapAction("GetBinaryState");
+            return response.GetBinaryStateResponse.BinaryState;
+        }
+
+        public string SetBinaryState(string state)
+        {
+            var response = ExecuteSoapAction("SetBinaryState", $"<BinaryState>{state}</BinaryState>").SetBinaryStateResponse;
+            var results = (IDictionary<string, object>) response;
+            return results.ContainsKey("CountdownEndTime") ? response.CountdownEndTime : response.BinaryState;
+        }
+
+        public string ChangeFriendlyName(string name)
+        {
+            ExecuteSoapAction("ChangeFriendlyName", $"<FriendlyName>{name}</FriendlyName>");
+
+            try
+            {
+                EnumerateDeviceInfo();
+                return Device.FriendlyName;
+            }
+            catch (Exception)
+            {
+                return "Error";
+            }
+        }
+
+        private dynamic ExecuteSoapAction(string command, string data = "")
         {
             var client = CreateClient();
             var request = CreateBasicEventRequest(command, data);
@@ -46,7 +102,7 @@
             return request;
         }
 
-        public dynamic ExecuteDeviceInfo()
+        private dynamic ExecuteDeviceInfo()
         {
             var client = CreateClient();
             var request = CreateBasicInfoRequest();

@@ -8,7 +8,7 @@ namespace Slight.WeMo.Service
     using Microsoft.Owin.Hosting;
 
     using Slight.WeMo.DataAccess;
-    using Slight.WeMo.Framework.Discovery;
+    using Slight.WeMo.Framework.Actors;
 
     internal static class Program
     {

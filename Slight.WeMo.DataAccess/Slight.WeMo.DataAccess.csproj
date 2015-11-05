@@ -143,6 +143,10 @@
     <Compile Include="Migrations\20151104031730_Init.designer.cs">
       <DependentUpon>20151104031730_Init.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20151105042954_V1.cs" />
+    <Compile Include="Migrations\20151105042954_V1.designer.cs">
+      <DependentUpon>20151105042954_V1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\WeMoContextModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WeMoContext.cs" />

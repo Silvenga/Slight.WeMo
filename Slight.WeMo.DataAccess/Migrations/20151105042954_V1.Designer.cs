@@ -8,9 +8,10 @@ using Slight.WeMo.DataAccess;
 namespace Slight.WeMo.DataAccess.Migrations
 {
     [DbContext(typeof(WeMoContext))]
-    partial class WeMoContextModelSnapshot : ModelSnapshot
+    [Migration("20151105042954_V1")]
+    partial class V1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .Annotation("ProductVersion", "7.0.0-beta8-15964");

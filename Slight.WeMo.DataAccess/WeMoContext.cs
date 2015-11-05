@@ -8,6 +8,8 @@
     {
         public DbSet<SwitchEvent> WeMoEvents { get; set; }
 
+        public DbSet<WeMoDevice> WeMoDevices { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var databaseFilePath = "WeMo.db";
