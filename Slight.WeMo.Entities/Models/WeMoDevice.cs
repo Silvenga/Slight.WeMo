@@ -39,5 +39,7 @@
 
         [DataType(DataType.DateTime)]
         public DateTime LastDetected { get; set; }
+
+        public bool Disabled { get; set; }
     }
 }

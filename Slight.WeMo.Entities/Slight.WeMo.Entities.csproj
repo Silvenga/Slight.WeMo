@@ -41,8 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enums\SwitchState.cs" />
-    <Compile Include="Models\SwitchEvent.cs" />
+    <Compile Include="Enums\BinaryState.cs" />
+    <Compile Include="Models\WeMoDeviceState.cs" />
     <Compile Include="Models\WeMoDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

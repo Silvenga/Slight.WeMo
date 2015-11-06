@@ -1,4 +1,4 @@
-﻿namespace Slight.WeMo.Framework.Actors
+﻿namespace Slight.WeMo.Framework.Tasks
 {
     using System;
     using System.Collections.Generic;
@@ -9,7 +9,7 @@
 
     using Slight.WeMo.Framework.Providers;
 
-    public class WeMoDiscoverer
+    public class DiscovererTask
     {
         private readonly DeviceProvider _provider = new DeviceProvider();
 
@@ -36,7 +36,7 @@
                 OnDeviceDetected(announcement);
             }
 
-            _provider.RemoveOldDevices();
+            _provider.DisableOldDevices();
         }
 
         private void OnDeviceDetected(DeviceAnnouncement device)

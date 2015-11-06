@@ -4,6 +4,7 @@
     using System.Web.Http;
     using System.Web.Http.Description;
 
+    using Slight.WeMo.Entities.Enums;
     using Slight.WeMo.Entities.Models;
     using Slight.WeMo.Framework.Actors;
     using Slight.WeMo.Framework.Providers;
@@ -11,7 +12,7 @@
     /// <summary>
     /// Manages WeMo devices.
     /// </summary>
-    [RoutePrefix("wemo")]
+    [RoutePrefix("")]
     public class DeviceController : ApiController
     {
         private readonly DeviceProvider _provider = new DeviceProvider();
@@ -22,7 +23,7 @@
         /// <returns>A WeMo device.</returns>
         /// <response code="200">OK</response>
         [ResponseType(typeof(IEnumerable<WeMoDevice>))]
-        [Route("devices"), HttpGet]
+        [Route("wemo/devices"), HttpGet]
         public IHttpActionResult ListDevices()
         {
             var deviceList = _provider.GetAll();
@@ -38,7 +39,7 @@
         /// <response code="200">OK</response>
         /// <response code="404">Device cannot be found.</response>
         [ResponseType(typeof(WeMoDevice))]
-        [Route("device/{deviceId}"), HttpGet]
+        [Route("wemo/device/{deviceId}"), HttpGet]
         public IHttpActionResult GetDevice(string deviceId)
         {
             var device = _provider.Get(deviceId);
@@ -60,7 +61,7 @@
         /// /// <response code="400">User error on request.</response>
         /// <response code="404">Device cannot be found.</response>
         [ResponseType(typeof(string))]
-        [Route("device/{deviceId}/signal"), HttpGet]
+        [Route("wemo/device/{deviceId}/signal"), HttpGet]
         public IHttpActionResult GetSignalStrength(string deviceId)
         {
             var device = _provider.Get(deviceId);
@@ -87,7 +88,7 @@
         /// <response code="200">OK</response>
         /// <response code="404">Device cannot be found.</response>
         [ResponseType(typeof(WeMoDevice))]
-        [Route("device/{deviceId}/refresh"), HttpPost]
+        [Route("wemo/device/{deviceId}/refresh"), HttpPost]
         public IHttpActionResult EnumerateDevice(string deviceId)
         {
             var device = _provider.Get(deviceId);
@@ -110,8 +111,8 @@
         /// <response code="200">OK</response>
         /// <response code="400">User error on request.</response>
         /// <response code="404">Device cannot be found.</response>
-        [ResponseType(typeof(string))]
-        [Route("device/{deviceId}/switch"), HttpGet]
+        [ResponseType(typeof(BinaryState))]
+        [Route("wemo/device/{deviceId}/switch"), HttpGet]
         public IHttpActionResult GetSwitchStatus(string deviceId)
         {
             var device = _provider.Get(deviceId);
@@ -120,7 +121,7 @@
             {
                 var client = new WeMoClient(device);
                 var results = client.GetBinaryState();
-                if (results == "Error")
+                if (results == BinaryState.Error)
                 {
                     return BadRequest();
                 }
@@ -139,7 +140,7 @@
         /// <response code="400">User error on request.</response>
         /// <response code="404">Device cannot be found.</response>
         [ResponseType(typeof(string))]
-        [Route("device/{deviceId}/switch/off"), HttpPut]
+        [Route("wemo/device/{deviceId}/switch/off"), HttpPut]
         public IHttpActionResult SetOff(string deviceId)
         {
             var device = _provider.Get(deviceId);
@@ -147,7 +148,7 @@
             if (device != null)
             {
                 var client = new WeMoClient(device);
-                var results = client.SetBinaryState("0");
+                var results = client.SetBinaryState(BinaryState.Off);
                 if (results == "Error")
                 {
                     return BadRequest();
@@ -167,7 +168,7 @@
         /// <response code="400">User error on request.</response>
         /// <response code="404">Device cannot be found.</response>
         [ResponseType(typeof(string))]
-        [Route("device/{deviceId}/switch/on"), HttpPut]
+        [Route("wemo/device/{deviceId}/switch/on"), HttpPut]
         public IHttpActionResult SetOn(string deviceId)
         {
             var device = _provider.Get(deviceId);
@@ -175,7 +176,7 @@
             if (device != null)
             {
                 var client = new WeMoClient(device);
-                var results = client.SetBinaryState("1");
+                var results = client.SetBinaryState(BinaryState.On);
                 if (results == "Error")
                 {
                     return BadRequest();
@@ -196,7 +197,7 @@
         /// <response code="400">User error on request.</response>
         /// <response code="404">Device cannot be found.</response>
         [ResponseType(typeof(string))]
-        [Route("device/{deviceId}/name"), HttpPut]
+        [Route("wemo/device/{deviceId}/name"), HttpPut]
         public IHttpActionResult SetName(string deviceId, [FromBody] string name)
         {
             var device = _provider.Get(deviceId);

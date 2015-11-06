@@ -11,6 +11,7 @@ namespace Slight.WeMo.Service
 
     using Slight.WeMo.DataAccess;
     using Slight.WeMo.Framework.Actors;
+    using Slight.WeMo.Framework.Tasks;
 
     internal static class Program
     {
@@ -28,13 +29,21 @@ namespace Slight.WeMo.Service
             Console.WriteLine("Starting host...");
             using (WebApp.Start<Startup>(baseAddress))
             {
-                Console.WriteLine("Starting bacground tasks...");
-                var discoverer = new WeMoDiscoverer();
-                RecurringJob.AddOrUpdate(() => discoverer.Search(), "*/1 * * * *");
+                Console.WriteLine("Starting background tasks...");
+                StartBackgroundTasks();
 
                 Console.WriteLine("Ready.");
                 Console.ReadLine();
             }
+        }
+
+        private static void StartBackgroundTasks()
+        {
+            var discoverer = new DiscovererTask();
+            RecurringJob.AddOrUpdate(() => discoverer.Search(), Cron.Minutely());
+
+            var recorder = new RecordStatesTask();
+            RecurringJob.AddOrUpdate(() => recorder.RecordState(), Cron.Minutely());
         }
     }
 }

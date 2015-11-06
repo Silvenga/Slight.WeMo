@@ -6,7 +6,7 @@
 
     public class WeMoContext : DbContext
     {
-        public DbSet<SwitchEvent> WeMoEvents { get; set; }
+        public DbSet<WeMoDeviceState> WeMoStates { get; set; }
 
         public DbSet<WeMoDevice> WeMoDevices { get; set; }
 

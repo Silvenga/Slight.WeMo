@@ -12,6 +12,7 @@
 
     using JetBrains.Annotations;
 
+    using Slight.WeMo.Entities.Enums;
     using Slight.WeMo.Entities.Models;
 
     public class WeMoClient
@@ -48,15 +49,16 @@
             return response.GetSignalStrengthResponse.SignalStrength;
         }
 
-        public string GetBinaryState()
+        public BinaryState GetBinaryState()
         {
             var response = ExecuteSoapAction("GetBinaryState");
-            return response.GetBinaryStateResponse.BinaryState;
+            var stateStr = response.GetBinaryStateResponse.BinaryState;
+            return BinaryStateHelp.StringToBinaryState(stateStr);
         }
 
-        public string SetBinaryState(string state)
+        public string SetBinaryState(BinaryState state)
         {
-            var response = ExecuteSoapAction("SetBinaryState", $"<BinaryState>{state}</BinaryState>").SetBinaryStateResponse;
+            var response = ExecuteSoapAction("SetBinaryState", $"<BinaryState>{BinaryStateHelp.BinaryStateToString(state)}</BinaryState>").SetBinaryStateResponse;
             var results = (IDictionary<string, object>) response;
             return results.ContainsKey("CountdownEndTime") ? response.CountdownEndTime : response.BinaryState;
         }

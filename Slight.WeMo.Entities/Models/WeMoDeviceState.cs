@@ -5,19 +5,17 @@
 
     using Slight.WeMo.Entities.Enums;
 
-    public class SwitchEvent
+    public class WeMoDeviceState
     {
         [Key]
         public int Id { get; set; }
 
         [Required, StringLength(36)]
-        public string DeviceId { get; set; }
+        public WeMoDevice Device { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime Timestamp { get; set; }
 
-        public SwitchState OldState { get; set; }
-
-        public SwitchState CurrentState { get; set; }
+        public BinaryState CurrentState { get; set; }
     }
 }

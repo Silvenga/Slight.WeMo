@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using JetBrains.Annotations;
+
     using Slight.WeMo.DataAccess;
     using Slight.WeMo.Entities.Models;
     using Slight.WeMo.Framework.Actors;
@@ -25,7 +27,8 @@
                 var client = new WeMoClient(device);
                 client.EnumerateDeviceInfo();
 
-                context.WeMoDevices.Add(device);
+                context.WeMoDevices
+                    .Add(device);
                 context.SaveChanges();
 
                 return device;
@@ -37,11 +40,13 @@
             using (var context = new WeMoContext())
             {
                 var url = new Uri(location);
-                var device = context.WeMoDevices.First(x => x.DeviceId == deviceId);
+                var device = context.WeMoDevices
+                    .First(x => x.DeviceId == deviceId);
 
                 device.Host = url.Host;
                 device.Port = url.Port;
                 device.Location = location;
+                device.Disabled = false;
 
                 var client = new WeMoClient(device);
                 client.EnumerateDeviceInfo();
@@ -56,13 +61,14 @@
         {
             using (var context = new WeMoContext())
             {
-                var device = context.WeMoDevices.First(x => x.DeviceId == deviceId);
+                var device = context.WeMoDevices
+                    .First(x => x.DeviceId == deviceId);
                 context.Remove(device);
                 context.SaveChanges();
             }
         }
 
-        public void RemoveOldDevices()
+        public void DisableOldDevices()
         {
             using (var context = new WeMoContext())
             {
@@ -70,7 +76,13 @@
                 var removedDevices = context.WeMoDevices
                     .Where(x => x.LastDetected > oldCutoff);
 
-                context.WeMoDevices.RemoveRange(removedDevices);
+                foreach (var device in removedDevices)
+                {
+                    device.Disabled = true;
+                }
+
+                context.WeMoDevices
+                    .UpdateRange(removedDevices);
                 context.SaveChanges();
             }
 
@@ -80,7 +92,8 @@
         {
             using (var context = new WeMoContext())
             {
-                var device = context.WeMoDevices.FirstOrDefault(x => x.DeviceId == deviceId);
+                var device = context.WeMoDevices
+                    .FirstOrDefault(x => x.DeviceId == deviceId);
                 return device;
             }
         }
@@ -95,11 +108,12 @@
             }
         }
 
-        public bool Exists(string deviceId)
+        public bool Exists([CanBeNull] string deviceId)
         {
             using (var context = new WeMoContext())
             {
-                var exists = context.WeMoDevices.Any(x => x.DeviceId == deviceId);
+                var exists = !string.IsNullOrEmpty(deviceId)
+                             && context.WeMoDevices.Any(x => x.DeviceId == deviceId);
                 return exists;
             }
         }
@@ -108,7 +122,8 @@
         {
             using (var context = new WeMoContext())
             {
-                var any = context.WeMoDevices.Any();
+                var any = context.WeMoDevices
+                    .Any();
                 return any;
             }
         }
