@@ -1,6 +1,9 @@
 ![Slight.WeMo](docs/images/icon.png)
 
 # Slight.WeMo
+
+[![AppVeyor](https://img.shields.io/appveyor/ci/Silvenga/slight-wemo.svg?maxAge=2592000&style=flat-square)](https://ci.appveyor.com/project/Silvenga/slight-wemo)
+
 Let there be light!
 
 ## Running
