@@ -1,3 +1,5 @@
+![Slight.WeMo](docs/images/icon.png)
+
 # Slight.WeMo
 Let there be light!
 
